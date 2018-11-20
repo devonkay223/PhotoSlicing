@@ -181,16 +181,23 @@ def crop_faces(path, path2):
         cv.imwrite(os.path.join("data/faces/cropped", baseName), sub_face) #take indivudual baseName rather than a static name
     ### ========== TODO : END ========== ###
 
-######################################################################
-# Part C
-# The naive average is a blurry indistinguishable blob because no 
-# features were aligned and all photosizes were mixed together.
-# The avg_naive is better because all the photos have been resized to be the same
-# however it is still difficult to look at because not all faces are in the same area of the
-# photo.
-# The avg_detect is the best because we use the opencv software to have all 
-# the faces overlayed intelligently. The features of each person line up and make the picture more readable.
-######################################################################
+def slicing():
+    # get all images (5) from user's file
+    imgs = []
+    for fn in get_files(path):
+        img = cv.imread(fn)
+        imgs.append(img)
+
+
+    img_height, img_width = img[0].shape[:2]
+    #Devon REWORD THIS -- figure out what this portrays actually though 
+    gender = input("How much do you feel like you dont fit into tech because of your gender, on a scale of 1 -10? ")
+    divs = img_height/gender # number of horizontal slices
+
+
+    #
+    for img in imgs:
+        
 
 
 ######################################################################
