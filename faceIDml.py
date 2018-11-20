@@ -18,6 +18,26 @@ INF = float("inf")
 ######################################################################
 # functions
 ######################################################################
+def make_folder(first, last):
+    """ Make folder in faces directory for current user
+
+    Parameters
+    --------------------
+        first   -- user first name, str
+        last    -- user last name, str
+
+    Return
+    --------------------
+        pathname    -- path anme for current user's files, str
+    """
+  # Create target Directory if don't exist
+    username = first + last
+    pathname = "data/faces/" + username
+    if not os.path.exists(pathname):
+        os.mkdir(pathname)
+        print("Directory " , pathname ,  " Created ")
+    else:    
+        print("Directory " , pathname ,  " already exists")
 
 def get_files(path):
     """Get full pathname of all files in path directory.
@@ -178,29 +198,35 @@ def crop_faces(path, path2):
 ######################################################################
 
 def main():
-    averages_dir = os.path.join("data/faces")
-    if not os.path.exists(averages_dir):
-        os.mkdir(averages_dir)
+    first = input("What is your first name? ")
+    last = input("What is your last name? ")
 
-    img = average_image("data/faces/raw")
-    cv.imshow("naive average", img)
-    cv.imwrite(os.path.join(averages_dir, "avg_naive.jpg"), img)
+    # make folder for current user
+    path = make_folder(first, last)
+
+    # averages_dir = os.path.join("data/faces")
+    # if not os.path.exists(averages_dir):
+    #     os.mkdir(averages_dir)
+
+    # img = average_image("data/faces/raw")
+    # cv.imshow("naive average", img)
+    # cv.imwrite(os.path.join(averages_dir, "avg_naive.jpg"), img)
    
-    ### ========== TODO : START ========== ###
-    ### Uncomment these lines after implementing code
+    # ### ========== TODO : START ========== ###
+    # ### Uncomment these lines after implementing code
 
-    # problem a
+    # # problem a
 
-    img = average_image("data/faces/raw", resize=True)
-    cv.imshow("naive resized average", img)
-    cv.imwrite(os.path.join(averages_dir, "avg_resized.jpg"), img)
+    # img = average_image("data/faces/raw", resize=True)
+    # cv.imshow("naive resized average", img)
+    # cv.imwrite(os.path.join(averages_dir, "avg_resized.jpg"), img)
 
-    # problem b
+    # # problem b
 
-    crop_faces("data/faces/raw", "data/faces/cropped")
-    img = average_image("data/faces/cropped", resize=True)
-    cv.imshow("face detection average", img)
-    cv.imwrite(os.path.join(averages_dir, "avg_detect.jpg"), img)
+    # crop_faces("data/faces/raw", "data/faces/cropped")
+    # img = average_image("data/faces/cropped", resize=True)
+    # cv.imshow("face detection average", img)
+    # cv.imwrite(os.path.join(averages_dir, "avg_detect.jpg"), img)
  
     # problem c
     """
