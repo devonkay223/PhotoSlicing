@@ -19,7 +19,7 @@ INF = float("inf")
 # functions
 ######################################################################
 def make_folder(first, last):
-    """ Make folder in faces directory for current user
+    """ Make folder in faces directory for current user if it doesnt already exist
 
     Parameters
     --------------------
@@ -30,7 +30,6 @@ def make_folder(first, last):
     --------------------
         pathname    -- path anme for current user's files, str
     """
-  # Create target Directory if don't exist
     username = first + last
     pathname = "data/faces/" + username
     if not os.path.exists(pathname):
@@ -38,6 +37,7 @@ def make_folder(first, last):
         print("Directory " , pathname ,  " Created ")
     else:    
         print("Directory " , pathname ,  " already exists")
+    return pathname
 
 def get_files(path):
     """Get full pathname of all files in path directory.
@@ -198,15 +198,24 @@ def crop_faces(path, path2):
 ######################################################################
 
 def main():
+    # File Set Up
+    # if the faces directory doesn't exist, create it
+    faces_dir = os.path.join("data/faces")
+    if not os.path.exists(faces_dir):
+        os.mkdir(faces_dir)
+    # if the finals directory doesn't exist, create it
+    faces_dir = os.path.join("data/faces")
+    finals_dir = os.path.join("data/finals")
+    if not os.path.exists(finals_dir):
+        os.mkdir(finals_dir)
+
+    # user name input
     first = input("What is your first name? ")
     last = input("What is your last name? ")
 
     # make folder for current user
     path = make_folder(first, last)
 
-    # averages_dir = os.path.join("data/faces")
-    # if not os.path.exists(averages_dir):
-    #     os.mkdir(averages_dir)
 
     # img = average_image("data/faces/raw")
     # cv.imshow("naive average", img)
