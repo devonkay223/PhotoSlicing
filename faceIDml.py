@@ -189,24 +189,49 @@ def slicing(gender, path, name):
     # get all images (5) from user's file
     imgs = []
     for fn in get_files(path):
-        img = cv.imread(fn)
-        imgs.append(img)
+        if (os.stat(fn).st_size != 0):
+            img = cv.imread(fn)
+            gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY) #convert to gray scale
+            imgs.append(gray)
+            #print(fn)
+            #name = str(i) + ".jpg"
+            #cv.imwrite(os.path.join("data/finals", name), img)
+    #print(len(imgs))    
     
-    img_height, img_width = imgs[0].shape[:2]
-    divHeight = int(img_height/gender) # height of horizontal slices
+    #imgs = from imgs in get_files(path) orderby file descending select file;
+
+    #var biggest = files.First();
+ 
+    img_height, img_width= imgs[0].shape
+    divHeight = img_height//gender # height of horizontal slices
     #crop each image for its respective height
     y = 0 # variable for where the crop should start in the vertical axis
-    for img in imgs:
+    for i, img in enumerate(imgs):
         upper = y + divHeight
         cropped = img[y:upper]
-        cv.imshow("cropped", cropped)
+        imgs[i] = cropped
+        #cv.imshow("cropped", cropped)
         y += divHeight
         #cv.imwrite(os.path.join("data/finals", "file.jpg"), cropped)
+    completeImg = ImgComb(imgs, divHeight, gender)
+    cv.imwrite(os.path.join("data/finals",name+str(gender)+".jpg"), completeImg)
 
-def complie(): 
-    #complie sliced images and save to individual folder and finals
+def ImgComb (imgs, divHeight, gender):
+	# create new image of double the width of the original
+    height, width = imgs[0].shape
+    #print(height)
+    comboImg = np.zeros((divHeight*gender, (width)), np.uint8)
 
-        
+	#print (ogimg[0, 0])
+	#print(ogimg[0, 0, 0])
+
+	#assign original images pixels to the new image
+    for i, img in enumerate(imgs):
+        for y in range(height):
+            for x in range(width):
+                comboImg[y+(height*i)-1, x] = img[y, x]
+    return comboImg
+
 
 
 ######################################################################
@@ -232,9 +257,9 @@ def main():
     path = make_userfolders(name)
     #print(path)
     #Devon REWORD THIS -- figure out what this portrays actually though 
-    gender = 8 #input("How much do you feel like you dont fit into tech because of your gender, on a scale of 1 -10? ")
+    gender = 5 #input("How much do you feel like you dont fit into tech because of your gender, on a scale of 1 -10? ")
     
-    slicing(gender, path, name)
+    slicing(int(gender), path, name)
 
 
     
