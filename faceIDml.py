@@ -16,9 +16,9 @@ import matplotlib.pyplot as plt
 INF = float("inf")
 User = False
 #hardcoding in the proportions for the slices
-TopSlice = 0.23
+TopSlice = 0.25
 MidSlice = 0.09
-BotSlice = 0.50
+BotSlice = 0.48
 
 
 ######################################################################
@@ -197,13 +197,9 @@ def slicing(gender, path, name):
             img = cv.imread(fn)
             gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY) #convert to gray scale
             imgs.append(gray)
-            #print(fn)
-            #name = str(i) + ".jpg"
-            #cv.imwrite(os.path.join("data/finals", name), img)
-    #print(len(imgs))    
- 
+            
     img_height, img_width= imgs[0].shape
-    #divHeight = img_height//gender # height of horizontal slices
+
     #crop each image for its respective height
     y = 0 # variable for where the crop should start in the vertical axis
     for i, img in enumerate(imgs):
@@ -217,33 +213,27 @@ def slicing(gender, path, name):
         cropped = img[y:upper]
         imgs[i] = cropped
         y += portion
-        #cv.imwrite(os.path.join("data/finals", "file.jpg"), cropped)
-    completeImg = ImgComb(imgs, img_height, gender)
-    cv.imwrite(os.path.join("data/finals",name+str(gender)+".jpg"), completeImg)
+    completeImg = ImgComb(imgs, img_height)
+    cv.imwrite(os.path.join("data/finals",name+str(4)+".jpg"), completeImg)
 
-def ImgComb (imgs, imgHeight, gender):
+def ImgComb (imgs, imgHeight):
 	# create new image of double the width of the original
     height, width = imgs[0].shape
     comboImg = np.zeros((imgHeight, (width)), np.uint8)
 
-	#print (ogimg[0, 0])
-	#print(ogimg[0, 0, 0])
-
 	#assign original images pixels to the new image
-    totalHeights = 0 
+    totalHeights = 0 #accounts for varied hieghts of slices
     for i, img in enumerate(imgs):
         height, width = imgs[i].shape
-        #print(i)
-        #print(height)
         for y in range(height):
             for x in range(width):
                 comboImg[y+(totalHeights)-1, x] = img[y, x]
         totalHeights += height
     return comboImg
 
-
 # def skew(): 
-#     #write skew code
+#     #code
+#     # vars: extremity, slice? 
 
 # def gap(): 
 #     #write gap code
@@ -276,13 +266,12 @@ def main():
         name  = first + last
         # make folder for current user
         path = make_userfolders(name)
-        #print(path)
         #Devon REWORD THIS -- figure out what this portrays actually though 
         gender = input("How much do you feel like you dont fit into tech because of your gender, on a scale of 1-5? ")
     else: 
         #change this to read from csv file
-        first = "Devon"
-        last = "Frost"
+        first = "Huiruo"
+        last = "Zhang"
         name = first + last
         # make folder for current user
         path = make_userfolders(name)
