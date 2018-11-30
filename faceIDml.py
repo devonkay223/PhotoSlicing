@@ -14,7 +14,11 @@ import cv2 as cv
 import matplotlib.pyplot as plt
 
 INF = float("inf")
-
+User = False
+#hardcoding in the proportions for the slices
+TopSlice = 0.23
+MidSlice = 0.09
+BotSlice = 0.50
 
 
 ######################################################################
@@ -188,7 +192,7 @@ def get_files(path):
 def slicing(gender, path, name):
     # get all images (5) from user's file
     imgs = []
-    for fn in get_files(path):
+    for fn in sorted(get_files(path)):
         if (os.stat(fn).st_size != 0):
             img = cv.imread(fn)
             gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY) #convert to gray scale
@@ -197,42 +201,58 @@ def slicing(gender, path, name):
             #name = str(i) + ".jpg"
             #cv.imwrite(os.path.join("data/finals", name), img)
     #print(len(imgs))    
-    
-    #imgs = from imgs in get_files(path) orderby file descending select file;
-
-    #var biggest = files.First();
  
     img_height, img_width= imgs[0].shape
-    divHeight = img_height//gender # height of horizontal slices
+    #divHeight = img_height//gender # height of horizontal slices
     #crop each image for its respective height
     y = 0 # variable for where the crop should start in the vertical axis
     for i, img in enumerate(imgs):
-        upper = y + divHeight
+        if (i==0): 
+            portion = int(img_height*(TopSlice))
+        if (i==1 or i==2 or i==3):
+            portion = int(img_height*(MidSlice))
+        if (i==4):
+            portion = int(img_height*(BotSlice))
+        upper = y + portion
         cropped = img[y:upper]
         imgs[i] = cropped
-        #cv.imshow("cropped", cropped)
-        y += divHeight
+        y += portion
         #cv.imwrite(os.path.join("data/finals", "file.jpg"), cropped)
-    completeImg = ImgComb(imgs, divHeight, gender)
+    completeImg = ImgComb(imgs, img_height, gender)
     cv.imwrite(os.path.join("data/finals",name+str(gender)+".jpg"), completeImg)
 
-def ImgComb (imgs, divHeight, gender):
+def ImgComb (imgs, imgHeight, gender):
 	# create new image of double the width of the original
     height, width = imgs[0].shape
-    #print(height)
-    comboImg = np.zeros((divHeight*gender, (width)), np.uint8)
+    comboImg = np.zeros((imgHeight, (width)), np.uint8)
 
 	#print (ogimg[0, 0])
 	#print(ogimg[0, 0, 0])
 
 	#assign original images pixels to the new image
+    totalHeights = 0 
     for i, img in enumerate(imgs):
+        height, width = imgs[i].shape
+        #print(i)
+        #print(height)
         for y in range(height):
             for x in range(width):
-                comboImg[y+(height*i)-1, x] = img[y, x]
+                comboImg[y+(totalHeights)-1, x] = img[y, x]
+        totalHeights += height
     return comboImg
 
 
+# def skew(): 
+#     #write skew code
+
+# def gap(): 
+#     #write gap code
+
+# def vertSlice():
+#     #write vertical slices code
+
+# def bits(): 
+#     #write bits code???
 
 ######################################################################
 # main
@@ -250,15 +270,24 @@ def main():
         os.mkdir(finals_dir)
 
     # User Input
-    first = "Devon"#input("What is your first name? ")
-    last = "Frost"#input("What is your last name? ")
-    name  = first + last
-    # make folder for current user
-    path = make_userfolders(name)
-    #print(path)
-    #Devon REWORD THIS -- figure out what this portrays actually though 
-    gender = 5 #input("How much do you feel like you dont fit into tech because of your gender, on a scale of 1 -10? ")
-    
+    if (User == True):
+        first = input("What is your first name? ")
+        last = input("What is your last name? ")
+        name  = first + last
+        # make folder for current user
+        path = make_userfolders(name)
+        #print(path)
+        #Devon REWORD THIS -- figure out what this portrays actually though 
+        gender = input("How much do you feel like you dont fit into tech because of your gender, on a scale of 1-5? ")
+    else: 
+        #change this to read from csv file
+        first = "Devon"
+        last = "Frost"
+        name = first + last
+        # make folder for current user
+        path = make_userfolders(name)
+        gender = 5
+
     slicing(int(gender), path, name)
 
 
