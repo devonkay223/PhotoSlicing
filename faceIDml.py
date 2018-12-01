@@ -12,6 +12,7 @@ import os
 import numpy as np
 import cv2 as cv
 import matplotlib.pyplot as plt
+import csv
 
 INF = float("inf")
 User = False
@@ -19,6 +20,15 @@ User = False
 TopSlice = 0.25
 MidSlice = 0.09
 BotSlice = 0.48
+# variables from users
+usernum = 0
+gender = 0
+pronouns = 0 
+race = 0
+sexuality = 0
+college = 0
+disability = 0
+other = 0
 
 
 ######################################################################
@@ -189,7 +199,44 @@ def get_files(path):
 #         cv.imwrite(os.path.join("data/faces/cropped", baseName), sub_face) #take indivudual baseName rather than a static name
 #     ### ========== TODO : END ========== ###
 
-def slicing(gender, path, name):
+def readData():
+    global usernum
+    global gender
+    global pronouns
+    global race
+    global sexuality
+    global college
+    global disability
+    global other
+
+    with open('MGTPP.csv') as csv_file:
+        print('reading data')
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        line_count = 0
+        col_count = 0
+        for row in csv_reader:
+            if line_count != 0:
+                if line_count == usernum:
+                    for col in row:
+                        if col_count == 4:
+                            gender = col
+                        if col_count == 5:
+                            pronouns = col
+                        if col_count == 6:
+                            race = col
+                        if col_count == 7:
+                            sexuality = col
+                        if col_count == 8:
+                            college = col
+                        if col_count == 9:
+                            disability = col
+                        if col_count == 10:
+                            other = col
+                        col_count += 1   
+            line_count += 1
+        #print(gender, pronouns, race)
+
+def slicing(path, name):
     # get all images (5) from user's file
     imgs = []
     for fn in sorted(get_files(path)):
@@ -215,6 +262,7 @@ def slicing(gender, path, name):
         y += portion
     completeImg = ImgComb(imgs, img_height)
     cv.imwrite(os.path.join("data/finals",name+str(4)+".jpg"), completeImg)
+
 
 def ImgComb (imgs, imgHeight):
 	# create new image of double the width of the original
@@ -264,20 +312,24 @@ def main():
         first = input("What is your first name? ")
         last = input("What is your last name? ")
         name  = first + last
+        usernum = input("What user are you?")
         # make folder for current user
         path = make_userfolders(name)
         #Devon REWORD THIS -- figure out what this portrays actually though 
-        gender = input("How much do you feel like you dont fit into tech because of your gender, on a scale of 1-5? ")
+        #gender = input("How much do you feel like you dont fit into tech because of your gender, on a scale of 1-5? ")
     else: 
         #change this to read from csv file
         first = "Huiruo"
         last = "Zhang"
         name = first + last
+        global usernum
+        usernum = 2
         # make folder for current user
         path = make_userfolders(name)
-        gender = 5
+        #gender = 5
 
-    slicing(int(gender), path, name)
+    readData()
+    #slicing(path, name)
 
 
     
