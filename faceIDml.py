@@ -13,6 +13,7 @@ import numpy as np
 import cv2 as cv
 import matplotlib.pyplot as plt
 import csv
+import random
 
 INF = float("inf")
 User = False
@@ -22,30 +23,22 @@ MidSlice = 0.09
 BotSlice = 0.48
 # variables from users
 usernum = 0
-gender = 0
-pronouns = 0 
-race = 0
-sexuality = 0
-college = 0
-disability = 0
-other = 0
+iden = [0, 0, 0, 0, 0, 0, 0]
+# gender = 0
+# pronouns = 0 
+# race = 0
+# sexuality = 0
+# college = 0
+# disability = 0
+# other = 0
+border = 120
 
 
 ######################################################################
 # functions
 ######################################################################
 def make_userfolders(username):
-    """ Make folder in faces directory for current user if it doesnt already exist
-
-    Parameters
-    --------------------
-        first   -- user first name, str
-        last    -- user last name, str
-
-    Return
-    --------------------
-        pathname    -- path anme for current user's files, str
-    """
+    #Make folder in faces directory for current user if it doesnt already exist
     pathname = "data/faces/" + username
     if not os.path.exists(pathname):
         os.mkdir(pathname)
@@ -58,17 +51,7 @@ def make_userfolders(username):
 
 
 def get_files(path):
-    """Get full pathname of all files in path directory.
-
-    Parameters
-    --------------------
-        path   -- directory path, str
-
-    Return
-    --------------------
-        fns    -- list of filenames, each of type str
-    """
-
+    #Get full pathname of all files in path directory.
     fns = []
     for fn in os.listdir(path):
         full_fn = os.path.join(path, fn)
@@ -200,14 +183,8 @@ def get_files(path):
 #     ### ========== TODO : END ========== ###
 
 def readData():
-    global usernum
-    global gender
-    global pronouns
-    global race
-    global sexuality
-    global college
-    global disability
-    global other
+    # global gender, pronouns, race, sexuality, college, disability, other
+    global iden
 
     with open('MGTPP.csv') as csv_file:
         print('reading data')
@@ -219,19 +196,19 @@ def readData():
                 if line_count == usernum:
                     for col in row:
                         if col_count == 4:
-                            gender = col
+                            iden[0] = col
                         if col_count == 5:
-                            pronouns = col
+                            iden[1] = col
                         if col_count == 6:
-                            race = col
+                            iden[2] = col
                         if col_count == 7:
-                            sexuality = col
+                            iden[3] = col
                         if col_count == 8:
-                            college = col
+                            iden[4] = col
                         if col_count == 9:
-                            disability = col
-                        if col_count == 10:
-                            other = col
+                            iden[5] = col
+                        if col_count == 11:
+                            iden[6] = col
                         col_count += 1   
             line_count += 1
         #print(gender, pronouns, race)
@@ -261,27 +238,75 @@ def slicing(path, name):
         imgs[i] = cropped
         y += portion
     completeImg = ImgComb(imgs, img_height)
-    cv.imwrite(os.path.join("data/finals",name+str(4)+".jpg"), completeImg)
+    cv.imwrite(os.path.join("data/finals",name+str(6)+".jpg"), completeImg)
 
 
 def ImgComb (imgs, imgHeight):
+    # global usernum, gender, pronouns, race, sexuality, college, disability, other, border
+    global iden
+
 	# create new image of double the width of the original
     height, width = imgs[0].shape
-    comboImg = np.zeros((imgHeight, (width)), np.uint8)
+    comboImg = np.full((imgHeight+border*2+35, (width+border*2)), 255) # 35 in H accounts for gaps
 
 	#assign original images pixels to the new image
     totalHeights = 0 #accounts for varied hieghts of slices
     for i, img in enumerate(imgs):
-        height, width = imgs[i].shape
-        for y in range(height):
-            for x in range(width):
-                comboImg[y+(totalHeights)-1, x] = img[y, x]
+        height, width = img.shape
+        gap = 7 # at least 7 pixels gap between each
+        if(i == 1 or i == 2 or i == 3):
+            z = identifier() # skew id
+            a = identifier() # gap id
+            skewBy = int(iden[z])*(30) # set skew
+            gap = int(iden[z])*(7) # set gap
+            for y in range(height):
+                for x in range(width):
+                        if(x+skewBy < width and y < height - gap): 
+                            comboImg[border+y+gap+(totalHeights)-1, x+skewBy+border] = img[y, x-skewBy]
+        else:
+            for y in range(height):
+                for x in range(width):
+                    comboImg[border+y+gap+(totalHeights)-1, x+border]= img[y, x]
+        # for y in range(height):
+        #     for x in range(width):
+        #         if(i == 3 and (x+skewBy < width)):
+        #             skewBy = int(iden[0])*(30)
+        #             comboImg[border+y+(totalHeights)-1, x+skewBy+border] = img[y, x-skewBy]
+        #         else:
+        #             comboImg[border+y+(totalHeights)-1, x+border]= img[y, x]
+        # height, width = imgs[i].shape
+        # for y in range(height):
+        #     for x in range(width):
+        #         comboImg[y+(totalHeights)-1, x] = img[y, x]
         totalHeights += height
     return comboImg
 
-# def skew(): 
-#     #code
-#     # vars: extremity, slice? 
+def skew(comboImg, img, totalHeights): 
+    global iden
+    
+    z = identifier()
+    
+    print("identifier")
+    print(iden[z])
+    skewBy = int(iden[z])*(30)
+    height, width = img.shape
+    for y in range(height):
+        for x in range(width):
+            if(i == 1 or i == 2 or i == 3):
+                if(x+skewBy < width):
+                    comboImg[border+y+(totalHeights)-1, x+skewBy+border] = img[y, x-skewBy]
+    return comboImg 
+
+def identifier(): 
+    used = []
+    z = random.randint(0, 6)
+    for i in used:
+        if z == i:
+            print('retry')
+            identifier()
+    print (z)
+    used.append(z)
+    return z
 
 # def gap(): 
 #     #write gap code
@@ -297,6 +322,7 @@ def ImgComb (imgs, imgHeight):
 ######################################################################
 
 def main():
+    global usernum
     # File Set Up
     # if the faces directory doesn't exist, create it
     faces_dir = os.path.join("data/faces")
@@ -322,14 +348,13 @@ def main():
         first = "Huiruo"
         last = "Zhang"
         name = first + last
-        global usernum
         usernum = 2
         # make folder for current user
         path = make_userfolders(name)
         #gender = 5
 
     readData()
-    #slicing(path, name)
+    slicing(path, name)
 
 
     
