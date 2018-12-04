@@ -16,7 +16,7 @@ import csv
 import random
 
 INF = float("inf")
-User = False
+User = True
 #hardcoding in the proportions for the slices
 TopSlice = 0.25
 MidSlice = 0.09
@@ -58,6 +58,7 @@ def get_files(path):
         if os.path.isdir(full_fn):
             continue
         fns.append(full_fn)
+    print(len(fns))
     return fns
 
 
@@ -255,51 +256,45 @@ def ImgComb (imgs, imgHeight):
         height, width = img.shape
         gap = 7 # at least 7 pixels gap between each
         if(i == 1 or i == 2 or i == 3):
+            print("skewing")
             z = identifier() # skew id
             a = identifier() # gap id
             skewBy = int(iden[z])*(30) # set skew
-            gap = int(iden[z])*(7) # set gap
+            if(int(iden[a]) != 0):
+                gap = int(iden[a])*(7) # set gap
             for y in range(height):
                 for x in range(width):
                         if(x+skewBy < width and y < height - gap): 
-                            comboImg[border+y+gap+(totalHeights)-1, x+skewBy+border] = img[y, x-skewBy]
+                            comboImg[border+y+gap+(totalHeights)-1, x+skewBy+border] = img[y, x-skewBy]                        
         else:
+            print("not skewing")
             for y in range(height):
                 for x in range(width):
                     comboImg[border+y+gap+(totalHeights)-1, x+border]= img[y, x]
-        # for y in range(height):
-        #     for x in range(width):
-        #         if(i == 3 and (x+skewBy < width)):
-        #             skewBy = int(iden[0])*(30)
-        #             comboImg[border+y+(totalHeights)-1, x+skewBy+border] = img[y, x-skewBy]
-        #         else:
-        #             comboImg[border+y+(totalHeights)-1, x+border]= img[y, x]
-        # height, width = imgs[i].shape
-        # for y in range(height):
-        #     for x in range(width):
-        #         comboImg[y+(totalHeights)-1, x] = img[y, x]
         totalHeights += height
     return comboImg
 
-def skew(comboImg, img, totalHeights): 
-    global iden
+
+# def skew(comboImg, img, totalHeights): 
+#     global iden
     
-    z = identifier()
+#     z = identifier()
     
-    print("identifier")
-    print(iden[z])
-    skewBy = int(iden[z])*(30)
-    height, width = img.shape
-    for y in range(height):
-        for x in range(width):
-            if(i == 1 or i == 2 or i == 3):
-                if(x+skewBy < width):
-                    comboImg[border+y+(totalHeights)-1, x+skewBy+border] = img[y, x-skewBy]
-    return comboImg 
+#     print("identifier")
+#     print(iden[z])
+#     skewBy = int(iden[z])*(30)
+#     height, width = img.shape
+#     for y in range(height):
+#         for x in range(width):
+#             if(i == 1 or i == 2 or i == 3):
+#                 if(x+skewBy < width):
+#                     comboImg[border+y+(totalHeights)-1, x+skewBy+border] = img[y, x-skewBy]
+#     return comboImg 
 
 def identifier(): 
     used = []
     z = random.randint(0, 6)
+    #TODO fix this so it works correctly 
     for i in used:
         if z == i:
             print('retry')
@@ -338,11 +333,9 @@ def main():
         first = input("What is your first name? ")
         last = input("What is your last name? ")
         name  = first + last
-        usernum = input("What user are you?")
+        usernum = input("What user are you? ")
         # make folder for current user
-        path = make_userfolders(name)
-        #Devon REWORD THIS -- figure out what this portrays actually though 
-        #gender = input("How much do you feel like you dont fit into tech because of your gender, on a scale of 1-5? ")
+        path = make_userfolders(name)      
     else: 
         #change this to read from csv file
         first = "Huiruo"
@@ -351,7 +344,6 @@ def main():
         usernum = 2
         # make folder for current user
         path = make_userfolders(name)
-        #gender = 5
 
     readData()
     slicing(path, name)
