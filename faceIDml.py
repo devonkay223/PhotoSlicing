@@ -186,15 +186,21 @@ def get_files(path):
 def readData():
     # global gender, pronouns, race, sexuality, college, disability, other
     global iden
+    global usernum
 
     with open('MGTPP.csv') as csv_file:
         print('reading data')
+        print(usernum)
         csv_reader = csv.reader(csv_file, delimiter=',')
         line_count = 0
         col_count = 0
         for row in csv_reader:
             if line_count != 0:
-                if line_count == usernum:
+                print("not zero")
+                print(line_count)
+                if line_count == int(usernum):
+                    print("user row")
+                    print(line_count)
                     for col in row:
                         if col_count == 4:
                             iden[0] = col
@@ -212,7 +218,7 @@ def readData():
                             iden[6] = col
                         col_count += 1   
             line_count += 1
-        #print(gender, pronouns, race)
+        print(iden[0], iden[1], iden[2])
 
 def slicing(path, name):
     # get all images (5) from user's file
