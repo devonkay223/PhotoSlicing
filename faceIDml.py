@@ -16,7 +16,7 @@ import csv
 import random
 
 INF = float("inf")
-User = True
+User = False
 #hardcoding in the proportions for the slices
 TopSlice = 0.25
 MidSlice = 0.09
@@ -31,7 +31,7 @@ iden = [0, 0, 0, 0, 0, 0, 0]
 # college = 0
 # disability = 0
 # other = 0
-border = 120
+border = 500
 
 
 ######################################################################
@@ -245,7 +245,7 @@ def slicing(path, name):
         imgs[i] = cropped
         y += portion
     completeImg = ImgComb(imgs, img_height)
-    cv.imwrite(os.path.join("data/finals",name+str(6)+".jpg"), completeImg)
+    cv.imwrite(os.path.join("data/tests",name+str(7)+".jpg"), completeImg)
 
 
 def ImgComb (imgs, imgHeight):
@@ -267,14 +267,20 @@ def ImgComb (imgs, imgHeight):
             z = identifier() # skew id
             a = identifier() # gap id
             skewBy = int(iden[z])*(30) # set skew
+            right  = random.choice([True, False])
+            print(right)
             #print(gap)
             if(int(iden[a]) != 0):
                 print("set gap")
                 gap = int(iden[a])*(7) # set gap
             for y in range(height):
                 for x in range(width):
-                        if(x+skewBy < width and y < height - gap):
-                            comboImg[y+gap+(totalHeights)-1, x+skewBy+border] = img[y, x-skewBy]                        
+                        if(x < width and y < height - gap): #check bounds of image
+                            if (right == True): #check skewed direction
+                                #print("right")
+                                comboImg[y+gap+(totalHeights)-1, x+skewBy+border] = img[y, x] 
+                            else:
+                                comboImg[y+gap+(totalHeights)-1, x+border-skewBy] = img[y, x]
         else:
             print("not skewing")
             for y in range(height):
@@ -310,7 +316,7 @@ def identifier():
         if z == i:
             print('retry')
             identifier()
-    #print (z)
+    print (z)
     used.append(z)
     return z
 
