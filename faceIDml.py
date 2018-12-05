@@ -58,7 +58,7 @@ def get_files(path):
         if os.path.isdir(full_fn):
             continue
         fns.append(full_fn)
-    print(len(fns))
+    #print(len(fns))
     return fns
 
 
@@ -189,18 +189,18 @@ def readData():
     global usernum
 
     with open('MGTPP.csv') as csv_file:
-        print('reading data')
-        print(usernum)
+        #print('reading data')
+        #print(usernum)
         csv_reader = csv.reader(csv_file, delimiter=',')
         line_count = 0
         col_count = 0
         for row in csv_reader:
             if line_count != 0:
-                print("not zero")
-                print(line_count)
+                #print("not zero")
+                #print(line_count)
                 if line_count == int(usernum):
-                    print("user row")
-                    print(line_count)
+                    #print("user row")
+                    #print(line_count)
                     for col in row:
                         if col_count == 4:
                             iden[0] = col
@@ -218,7 +218,7 @@ def readData():
                             iden[6] = col
                         col_count += 1   
             line_count += 1
-        print(iden[0], iden[1], iden[2])
+        #print(iden[0], iden[1], iden[2])
 
 def slicing(path, name):
     # get all images (5) from user's file
@@ -257,27 +257,32 @@ def ImgComb (imgs, imgHeight):
     comboImg = np.full((imgHeight+border*2+35, (width+border*2)), 255) # 35 in H accounts for gaps
 
 	#assign original images pixels to the new image
-    totalHeights = 0 #accounts for varied hieghts of slices
+    totalHeights = border #accounts for varied hieghts of slices
     for i, img in enumerate(imgs):
         height, width = img.shape
         gap = 7 # at least 7 pixels gap between each
+        #print(height)
         if(i == 1 or i == 2 or i == 3):
             print("skewing")
             z = identifier() # skew id
             a = identifier() # gap id
             skewBy = int(iden[z])*(30) # set skew
+            #print(gap)
             if(int(iden[a]) != 0):
+                print("set gap")
                 gap = int(iden[a])*(7) # set gap
             for y in range(height):
                 for x in range(width):
-                        if(x+skewBy < width and y < height - gap): 
-                            comboImg[border+y+gap+(totalHeights)-1, x+skewBy+border] = img[y, x-skewBy]                        
+                        if(x+skewBy < width and y < height - gap):
+                            comboImg[y+gap+(totalHeights)-1, x+skewBy+border] = img[y, x-skewBy]                        
         else:
             print("not skewing")
             for y in range(height):
                 for x in range(width):
-                    comboImg[border+y+gap+(totalHeights)-1, x+border]= img[y, x]
+                    if(y < height - gap):
+                        comboImg[y+gap+(totalHeights)-1, x+border]= img[y, x]
         totalHeights += height
+        #print(totalHeights)
     return comboImg
 
 
@@ -305,7 +310,7 @@ def identifier():
         if z == i:
             print('retry')
             identifier()
-    print (z)
+    #print (z)
     used.append(z)
     return z
 
