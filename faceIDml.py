@@ -16,7 +16,7 @@ import csv
 import random
 
 INF = float("inf")
-User = False
+User = True
 #hardcoding in the proportions for the slices
 TopSlice = 0.25
 MidSlice = 0.09
@@ -245,7 +245,7 @@ def slicing(path, name):
         imgs[i] = cropped
         y += portion
     completeImg = ImgComb(imgs, img_height)
-    cv.imwrite(os.path.join("data/tests",name+str(7)+".jpg"), completeImg)
+    cv.imwrite(os.path.join("data/tests",name+str(13)+".jpg"), completeImg)
 
 
 def ImgComb (imgs, imgHeight):
@@ -262,6 +262,7 @@ def ImgComb (imgs, imgHeight):
         height, width = img.shape
         gap = 7 # at least 7 pixels gap between each
         #print(height)
+        #middle slices get skewed
         if(i == 1 or i == 2 or i == 3):
             print("skewing")
             z = identifier() # skew id
@@ -276,10 +277,10 @@ def ImgComb (imgs, imgHeight):
             for y in range(height):
                 for x in range(width):
                         if(x < width and y < height - gap): #check bounds of image
-                            if (right == True): #check skewed direction
+                            if (right == True): #skews slice right
                                 #print("right")
                                 comboImg[y+gap+(totalHeights)-1, x+skewBy+border] = img[y, x] 
-                            else:
+                            else: #skews slice left
                                 comboImg[y+gap+(totalHeights)-1, x+border-skewBy] = img[y, x]
         else:
             print("not skewing")
@@ -289,6 +290,54 @@ def ImgComb (imgs, imgHeight):
                         comboImg[y+gap+(totalHeights)-1, x+border]= img[y, x]
         totalHeights += height
         #print(totalHeights)
+    comboImg = vertGlitch(comboImg)
+    comboImg = horzGlitch(comboImg)
+    return comboImg
+
+def ImgCombNoGap (imgs, imgHeight):
+    # global usernum, gender, pronouns, race, sexuality, college, disability, other, border
+    global iden
+
+	# create new image of double the width of the original
+    height, width = imgs[0].shape
+    comboImg = np.full((imgHeight+border*2, (width+border*2)), 255) # 35 in H accounts for gaps
+
+	#assign original images pixels to the new image
+    totalHeights = border #accounts for varied hieghts of slices
+    for i, img in enumerate(imgs):
+        height, width = img.shape
+        #gap = 7 # at least 7 pixels gap between each
+        #print(height)
+        #middle slices get skewed
+        if(i == 1 or i == 2 or i == 3):
+            print("skewing")
+            z = identifier() # skew id
+            #a = identifier() # gap id
+            skewBy = int(iden[z])*(30) # set skew
+            right  = random.choice([True, False])
+            print(right)
+            #print(gap)
+            # if(int(iden[a]) != 0):
+            #     print("set gap")
+            #     gap = int(iden[a])*(7) # set gap
+            for y in range(height):
+                for x in range(width):
+                        if(x < width and y < height): #check bounds of image
+                            if (right == True): #skews slice right
+                                #print("right")
+                                comboImg[y+(totalHeights)-1, x+skewBy+border] = img[y, x] 
+                            else: #skews slice left
+                                comboImg[y+(totalHeights)-1, x+border-skewBy] = img[y, x]
+        else:
+            print("not skewing")
+            for y in range(height):
+                for x in range(width):
+                    if(y < height):
+                        comboImg[y+(totalHeights)-1, x+border]= img[y, x]
+        totalHeights += height
+        #print(totalHeights)
+    comboImg = vertGlitch(comboImg)
+    #comboImg = horzGlitch(comboImg)
     return comboImg
 
 
@@ -311,27 +360,46 @@ def ImgComb (imgs, imgHeight):
 def identifier(): 
     used = []
     z = random.randint(0, 6)
-    #TODO fix this so it works correctly 
-    for i in used:
-        if z == i:
-            print('retry')
-            identifier()
+    # #TODO fix this so it works correctly if you want
+    # for i in used:
+    #     if z == i:
+    #         print('retry')
+    #         identifier()
     print (z)
     used.append(z)
     return z
 
-# def gap(): 
-#     #write gap code
+def horzGlitch(comboImg):
+    global iden, border   
+    for identity in iden:
+        identity = int(identity)
+        for i in range(identity):
+            height, width = comboImg.shape
+            loc = random.randint(0 + border*2, width - border*2)
+            sliceWidth = random.randint(10*identity, 20*identity)
+            print(sliceWidth)
+            skew = random.randint(15, 70)
+            for x in range(loc, sliceWidth+loc):
+                for y in range(height - skew - 1):
+                    comboImg[x, y]= comboImg[x, y+skew]
+    return comboImg
 
-# def vertSlice():
-#     #write vertical slices code
+def vertGlitch(comboImg):
+    global iden, border
 
-# def bits(): 
-#     #write bits code???
-
-######################################################################
-# main
-######################################################################
+    for identity in iden:
+        identity = int(identity)
+        for i in range(int(identity)):
+            height, width = comboImg.shape
+            loc = random.randint(0 + border*3, width - border*3)
+            print(loc)
+            sliceWidth = random.randint(10*identity, 20*identity)
+            print(sliceWidth)
+            skew = random.randint(15, 70)
+            for x in range(loc, sliceWidth+loc):
+                for y in range(height-skew):
+                    comboImg[y, x]= comboImg[y+skew, x]
+    return comboImg
 
 def main():
     global usernum
