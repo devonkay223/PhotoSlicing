@@ -1,6 +1,6 @@
 """
 ADAPTED FROM CS121 @ HARVEY MUDD HOMEWORK
-Origional files info/credit below
+Original files info/credit below
 Author      : Yi-Chieh Wu, Devon Frost, Amy Sorto, Shannon Steele
 Class       : HMC CS 121
 Date        : 2018 Sep 04
@@ -16,7 +16,7 @@ import csv
 import random
 
 INF = float("inf")
-User = True
+User = False
 #hardcoding in the proportions for the slices
 TopSlice = 0.25
 MidSlice = 0.09
@@ -184,6 +184,58 @@ def get_files(path):
 #     ### ========== TODO : END ========== ###
 
 def readData():
+    global iden
+    global usernum
+
+    with open('MGTPP.csv') as csv_file:
+        print('reading data')
+        #print(usernum)
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        line_count = 0
+        for row in csv_reader:
+            #print(row)
+            if line_count != 0:
+                usernum = line_count
+                print(usernum)
+                name = readName()
+                readNumData()
+                path = make_userfolders(name)
+                slicing(path, name)
+            line_count+=1
+
+
+
+def readName():
+    # global gender, pronouns, race, sexuality, college, disability, other
+    global iden
+    global usernum
+
+    with open('MGTPP.csv') as csv_file:
+        #print('reading data')
+        #print(usernum)
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        line_count = 0
+        col_count = 0
+        first = ""
+        last = ""
+        for row in csv_reader:
+            #print(row)
+            if line_count == int(usernum):
+                #print(True)
+                for col in row:
+                    if col_count == 2: 
+                        first = col
+                        #(first)
+                    if col_count == 3:
+                        last = col
+                    col_count += 1
+            line_count += 1
+        name = first + last
+        print(name)
+        return name
+
+
+def readNumData():
     # global gender, pronouns, race, sexuality, college, disability, other
     global iden
     global usernum
@@ -223,11 +275,14 @@ def readData():
 def slicing(path, name):
     # get all images (5) from user's file
     imgs = []
+    i=0
     for fn in sorted(get_files(path)):
         if (os.stat(fn).st_size != 0):
+            #print(i)
             img = cv.imread(fn)
             gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY) #convert to gray scale
             imgs.append(gray)
+            i+=1
             
     img_height, img_width= imgs[0].shape
 
@@ -245,7 +300,7 @@ def slicing(path, name):
         imgs[i] = cropped
         y += portion
     completeImg = ImgComb(imgs, img_height)
-    cv.imwrite(os.path.join("data/tests",name+str(13)+".jpg"), completeImg)
+    cv.imwrite(os.path.join("data/batchtests/f6",name+".jpg"), completeImg)
 
 
 def ImgComb (imgs, imgHeight):
@@ -370,18 +425,21 @@ def identifier():
     return z
 
 def horzGlitch(comboImg):
-    global iden, border   
+    global iden, border 
+    #print("horz")  
     for identity in iden:
         identity = int(identity)
         for i in range(identity):
             height, width = comboImg.shape
-            loc = random.randint(0 + border*2, width - border*2)
+            loc = random.randint(0 + border*2, height - border*2)
             sliceWidth = random.randint(10*identity, 20*identity)
-            print(sliceWidth)
+            #print(loc)
+            #print(sliceWidth)
             skew = random.randint(15, 70)
-            for x in range(loc, sliceWidth+loc):
-                for y in range(height - skew - 1):
-                    comboImg[x, y]= comboImg[x, y+skew]
+            for y in range(loc, sliceWidth+loc):
+                for x in range(width-skew):
+                    if (x+skew < width and y < height):
+                        comboImg[y, x]= comboImg[y, x+skew]
     return comboImg
 
 def vertGlitch(comboImg):
@@ -392,9 +450,9 @@ def vertGlitch(comboImg):
         for i in range(int(identity)):
             height, width = comboImg.shape
             loc = random.randint(0 + border*3, width - border*3)
-            print(loc)
+            #print(loc)
             sliceWidth = random.randint(10*identity, 20*identity)
-            print(sliceWidth)
+            #print(sliceWidth)
             skew = random.randint(15, 70)
             for x in range(loc, sliceWidth+loc):
                 for y in range(height-skew):
@@ -420,18 +478,12 @@ def main():
         name  = first + last
         usernum = input("What user are you? ")
         # make folder for current user
-        path = make_userfolders(name)      
-    else: 
-        #change this to read from csv file
-        first = "Huiruo"
-        last = "Zhang"
-        name = first + last
-        usernum = 2
-        # make folder for current user
         path = make_userfolders(name)
+        readNumData()
+        slicing(path, name)     
+    else: 
+        readData()
 
-    readData()
-    slicing(path, name)
 
 
     
