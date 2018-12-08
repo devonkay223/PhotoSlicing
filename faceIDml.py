@@ -16,7 +16,7 @@ import csv
 import random
 
 INF = float("inf")
-User = False
+User = True
 #hardcoding in the proportions for the slices
 TopSlice = 0.25
 MidSlice = 0.09
@@ -143,7 +143,7 @@ def get_files(path):
     
 
 
-# def crop_faces(path, path2):
+# def findeyes():
 #     """Crop faces using face detection.
 
 #     Parameters
@@ -182,6 +182,20 @@ def get_files(path):
 #             sub_face = img[y:y+h, x:x+w]
 #         cv.imwrite(os.path.join("data/faces/cropped", baseName), sub_face) #take indivudual baseName rather than a static name
 #     ### ========== TODO : END ========== ###
+
+# #Todo finish implementing ML?
+# def findEyes():
+#     face_cascade = cv.CascadeClassifier('haarcascade_frontalface_default.xml')
+#     eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml') 
+    
+#     faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+#     for (x,y,w,h) in faces:
+#         eyes = eye_cascade.detectMultiScale(roi_gray)
+#         for (ex,ey,ew,eh) in eyes:
+#             print(ex)
+#             print(ey)
+#             print(ew)
+#             print(eh)
 
 def readData():
     global iden
@@ -270,7 +284,7 @@ def readNumData():
                             iden[6] = col
                         col_count += 1   
             line_count += 1
-        #print(iden[0], iden[1], iden[2])
+        print(iden[0], iden[1], iden[2])
 
 def slicing(path, name):
     # get all images (5) from user's file
@@ -278,7 +292,7 @@ def slicing(path, name):
     i=0
     for fn in sorted(get_files(path)):
         if (os.stat(fn).st_size != 0):
-            #print(i)
+            print(i)
             img = cv.imread(fn)
             gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY) #convert to gray scale
             imgs.append(gray)
@@ -300,7 +314,7 @@ def slicing(path, name):
         imgs[i] = cropped
         y += portion
     completeImg = ImgComb(imgs, img_height)
-    cv.imwrite(os.path.join("data/batchtests/f6",name+".jpg"), completeImg)
+    cv.imwrite(os.path.join("data/tests",name+".jpg"), completeImg)
 
 
 def ImgComb (imgs, imgHeight):
@@ -396,22 +410,6 @@ def ImgCombNoGap (imgs, imgHeight):
     return comboImg
 
 
-# def skew(comboImg, img, totalHeights): 
-#     global iden
-    
-#     z = identifier()
-    
-#     print("identifier")
-#     print(iden[z])
-#     skewBy = int(iden[z])*(30)
-#     height, width = img.shape
-#     for y in range(height):
-#         for x in range(width):
-#             if(i == 1 or i == 2 or i == 3):
-#                 if(x+skewBy < width):
-#                     comboImg[border+y+(totalHeights)-1, x+skewBy+border] = img[y, x-skewBy]
-#     return comboImg 
-
 def identifier(): 
     used = []
     z = random.randint(0, 6)
@@ -486,32 +484,6 @@ def main():
 
 
 
-    
-
-    # img = average_image("data/faces/raw")
-    # cv.imshow("naive average", img)
-    # cv.imwrite(os.path.join(averages_dir, "avg_naive.jpg"), img)
-   
-    # ### ========== TODO : START ========== ###
-    # ### Uncomment these lines after implementing code
-
-    # # problem a
-
-    # img = average_image("data/faces/raw", resize=True)
-    # cv.imshow("naive resized average", img)
-    # cv.imwrite(os.path.join(averages_dir, "avg_resized.jpg"), img)
-
-    # # problem b
-
-    # crop_faces("data/faces/raw", "data/faces/cropped")
-    # img = average_image("data/faces/cropped", resize=True)
-    # cv.imshow("face detection average", img)
-    # cv.imwrite(os.path.join(averages_dir, "avg_detect.jpg"), img)
- 
-    # problem c
-    """
-    Short Description Here
-    """
     ### ========== TODO : END ========== ###
 
 if __name__ == "__main__":

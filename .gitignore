@@ -1,4 +1,5 @@
 # Don't track content of these folders
 data/
+data/faces/
 
 MGTPP.csv
