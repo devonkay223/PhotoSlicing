@@ -16,7 +16,7 @@ import csv
 import random
 
 INF = float("inf")
-User = True
+User = False
 #hardcoding in the proportions for the slices
 TopSlice = 0.25
 MidSlice = 0.09
@@ -314,7 +314,7 @@ def slicing(path, name):
         imgs[i] = cropped
         y += portion
     completeImg = ImgComb(imgs, img_height)
-    cv.imwrite(os.path.join("data/tests",name+".jpg"), completeImg)
+    cv.imwrite(os.path.join("data/batchtests/f12",name+".jpg"), completeImg)
 
 
 def ImgComb (imgs, imgHeight):
