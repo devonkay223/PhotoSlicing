@@ -310,11 +310,11 @@ def main():
         # make folder for current user
         SingleUserRun(name)
     elif (input("Would you like to run a batch? yes/no ") == "yes"):
-            batchNum = input("What batch folder do you want to save to? ")
-            batch_dir = os.path.join("data/batchtests/"+batchNum)
-            if not os.path.exists(batch_dir):
-                os.mkdir(batch_dir)
-            readBatchData()
+        batchNum = input("What batch folder do you want to save to? ")
+        batch_dir = os.path.join("data/batchtests/"+batchNum)
+        if not os.path.exists(batch_dir):
+            os.mkdir(batch_dir)
+        readBatchData()
 
 if __name__ == "__main__":
     main()
