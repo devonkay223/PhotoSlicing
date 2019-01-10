@@ -134,7 +134,6 @@ def slicing(path, name):
     imgs = gray(path, name)
     img_height, img_width = imgs[0].shape[:2]
     crops = crop(imgs)
-    print(img_height)
     completeImg = ImgComb(crops, img_height, True, True)
 
     # save final image to appropriate location
@@ -171,7 +170,6 @@ def crop(imgs):
         cropped = img[y:upper]
         imgs[i] = cropped
         y += portion
-        print(portion)
     return imgs
 
 # BOTH: combines slices into a single image
@@ -182,15 +180,10 @@ def ImgComb (imgs, imgHeight, horz, vert):
 	# create new image of double the width of the original
     height, width = imgs[0].shape[:2]
     comboImg = np.full((imgHeight+border*2+35, (width+border*2)), 255) # 35 in H accounts for gaps
-    print(comboImg.shape[:2])
-    # print(height)
-    # print(width)
 	# assign original images pixels to the new image
     totalHeights = border #accounts for varied hieghts of slices
-    print(totalHeights)
     for i, img in enumerate(imgs):
         height, width = img.shape[:2]
-        print(height)
         gap = 7 # at least 7 pixels gap between each
         #middle slices get skewed
         if(i == 1 or i == 2 or i == 3):
@@ -216,7 +209,6 @@ def ImgComb (imgs, imgHeight, horz, vert):
                     if(y < height - gap):
                         comboImg[y+gap+(totalHeights)-1, x+border] = img[y, x]
         totalHeights += height
-        print(totalHeights)
     if (vert == True):
         comboImg = vertGlitch(comboImg)
     if (horz == True):
